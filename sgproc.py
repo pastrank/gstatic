@@ -717,7 +717,7 @@ def isprivate(nf):
 def privatedirectoryset():
 	"""create apache access configuration files for a directory"""
 
-	if cfgget("z_openssl_path") == "":
+	if cfgget("appopenssl") == "":
 		return
 
 	lista = cfgget("privatedirectories").split("|")
@@ -736,9 +736,9 @@ def privatedirectoryset():
 						sgutils.showmsg("Passwords must be 8 chars, truncating", 0)
 						arr[1] = arr[1][:8]
 					if res == "":
-						res = arr[0] + ":" + extgetcmd("openssl passwd -crypt -salt " + sgutils.getuniqueid("", "salt") + " " + arr[1])
+						res = arr[0] + ":" + extgetcmd(cfgget("appopenssl") + " passwd -crypt -salt " + sgutils.getuniqueid("", "salt") + " " + arr[1])
 					else:
-						res += "\n" + arr[0] + ":" + extgetcmd("openssl passwd -crypt -salt " + sgutils.getuniqueid("", "salt") + " " + arr[1])
+						res += "\n" + arr[0] + ":" + extgetcmd(cfgget("appopenssl") + " passwd -crypt -salt " + sgutils.getuniqueid("", "salt") + " " + arr[1])
 
 			sgutils.file_write(os.path.join(cfgget("dirstart"), sdir, ".htaccess"), gen_gethtaccess(sdir), "w")
 			sgutils.file_write(os.path.join(cfgget("dirstart"), sdir, ".htpasswd"), res, "w")
@@ -1885,19 +1885,23 @@ def htmlbuildprocess(nf):
 
 def htmlbuildagecontrol(fdate):
 	"""
-
 	:param fdate: last saved file changes
 	:return: a false or true to the request of process file due the age
 	"""
+	eta = sgconf.cfgget("processingonagedays")
+	cur = sgconf.cfgget("z_currentdate")
+	fda = int(fdate)
 
-	if int(cfgget("processingonagedays")) == 0:
-		return True
-	else:
-		if int(cfgget("z_currentdate")) - int(fdate) <= int(cfgget("processingonagedays")):
+	try:
+		if eta == 0:
 			return True
 		else:
-			return False
-
+			if (cur - fda) <= eta:
+				return True
+			else:
+				return False
+	except:
+		return True
 
 def htmlbuildgettemplate(nf, personalized):
 	"""get template file for a specified file: it gets first the file in slug, then template-name, then"

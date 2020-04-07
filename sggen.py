@@ -179,6 +179,21 @@ def createconfigfile(creatingdirectory):
 		iparse.set("RSS", "RSSDontAddThese", "")
 	if not iparse.has_option("RSS", "RSSSummaryLength"):
 		iparse.set("RSS", "RSSSummaryLength", "300")
+	# external progs  -------------------------------------------------------------------------
+	if not iparse.has_section("Applications"):
+		iparse.add_section("Applications")
+	if os.name == "nt":
+		winexecutable = ".exe"
+	else:
+		winexecutable = ""
+	if not iparse.has_option("Applications", "Convert"):
+			iparse.set("Applications", "Convert", "convert" + winexecutable)
+	if not iparse.has_option("Applications", "Identify"):
+			iparse.set("Applications", "Identify", "identify" + winexecutable)
+	if not iparse.has_option("Applications", "Mogrify"):
+			iparse.set("Applications", "Mogrify", "mogrify" + winexecutable)
+	if not iparse.has_option("Applications", "OpenSSL"):
+			iparse.set("Applications", "OpenSSL", "openssl" + winexecutable)
 
 	# final writing
 	with open(os.path.join(creatingdirectory, "site", "site.conf"), "w", encoding="utf-8") as f:
@@ -661,7 +676,7 @@ def createnewsite(directory):
 
 		filename = os.path.join(directory, "index.jpg")
 		if not os.path.exists(filename):
-			cmdline = 'convert -size 600x400 0x5' + ' plasma:fractal ' + filename
+			cmdline = sgconf.cfgget("appconvert") + ' -size 600x400 0x5' + ' plasma:fractal ' + filename
 			extruncmd(cmdline, True)
 			sgutils.showmsg("An image at home created", MESSAGE_DEBUG)
 
@@ -719,28 +734,28 @@ def createnewsite(directory):
 	for i in range(1, 6):
 		newfile = os.path.join(directory, 'images', 'example', 'test' + str(i) + '.jpg')
 		if not os.path.exists(newfile):
-			cmdline = 'convert -size 1200x800 0x' + str(i) + ' plasma:fractal ' + newfile
+			cmdline = sgconf.cfgget("appconvert") + ' -size 1200x800 0x' + str(i) + ' plasma:fractal ' + newfile
 			extruncmd(cmdline, True)
 	for i in range(1, 6):
 		newfile = os.path.join(directory, 'images', 'second-example', 'test' + str(i) + '.jpg')
 		if not os.path.exists(newfile):
-			cmdline = 'convert -size 1200x800 0x' + str(i) + ' plasma:fractal ' + newfile
+			cmdline = sgconf.cfgget("appconvert") + ' -size 1200x800 0x' + str(i) + ' plasma:fractal ' + newfile
 			extruncmd(cmdline, True)
 
 	# some posts and images
 	d = os.path.join(directory, "posts", str(exyear), "04", "06", "bene-birthday")
 	sgutils.file_write(d + ".md", getlorem() * 6, "w")
-	cmdline = "convert -size 600x600 0x1 plasma:fractal '" + d + ".jpg'"
+	cmdline = sgconf.cfgget("appconvert") + "' -size 600x600 0x1 plasma:fractal '" + d + ".jpg'"
 	extruncmd(cmdline, False)
 
 	d = os.path.join(directory, "posts", str(exyear), "09", "10", "my-birthday")
 	sgutils.file_write(d + ".md", getlorem() * 9, "w")
-	cmdline = "convert -size 600x600 0x2 plasma:fractal '" + d + ".jpg'"
+	cmdline = sgconf.cfgget("appconvert") + "' -size 600x600 0x2 plasma:fractal '" + d + ".jpg'"
 	extruncmd(cmdline, False)
 
 	d = os.path.join(directory, "posts", str(exyear), "12", "31", "last-day-of-the-year")
 	sgutils.file_write(d + ".md", getlorem() * 12, "w")
-	cmdline = "convert -size 600x300 0x3 plasma:fractal '" + d + ".jpg'"
+	cmdline = sgconf.cfgget("appconvert") + "' -size 600x300 0x3 plasma:fractal '" + d + ".jpg'"
 	extruncmd(cmdline, False)
 
 	print("\nA new site structure should be done in " + sgconf.cfgget("dirstart"))

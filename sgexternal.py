@@ -71,17 +71,17 @@ def extgraphicinfo(immagine, cosa):
 	arr = [0, 0]
 
 	if cosa == "linksize":
-		cmdl = "identify -format \'%w %h\' '" + immagine + "'"
+		cmdl = sgconf.cfgget("appidentify") + " -format \'%w %h\' '" + immagine + "'"
 		v = extgetcmd(cmdl)
 		arr = v.split(" ")
 		v = "width='" + arr[0] + "' height='" + arr[1] + "'"
 		return v
 	elif cosa == "exif":
-		cmdl = "identify -format %[exif:*] '" + immagine + "'"
+		cmdl = sgconf.cfgget("appidentify") + " -format %[exif:*] '" + immagine + "'"
 		v = extgetcmd(cmdl)
 		return v
 	elif cosa == "arrdim":
-		cmdl = "identify -format \'%w %h\' '" + immagine + "'"
+		cmdl = sgconf.cfgget("appidentify") + " -format \'%w %h\' '" + immagine + "'"
 		v = extgetcmd(cmdl)
 		arr = v.split(" ")
 		# if an image is corrupted, it will return strings, not numbers
@@ -105,17 +105,17 @@ def extgraphicresize(immagine, larghezza, thumb):
 	densita = sgconf.cfgget("imagesresolution")
 	if thumb == "":
 		extbackup(immagine)
-		cmdline = 'mogrify ' + sgconf.cfgget("imagestriptags") + ' -density ' + str(densita) + ' -quality ' + str(compressione) + ' -scale ' + str(larghezza) + ' "' + immagine + '"'
+		cmdline = sgconf.cfgget("appmogrify") + ' ' + sgconf.cfgget("imagestriptags") + ' -density ' + str(densita) + ' -quality ' + str(compressione) + ' -scale ' + str(larghezza) + ' "' + immagine + '"'
 		extruncmd(cmdline, True)
 	else:
-		cmdline = 'convert ' + sgconf.cfgget("imagestriptags") + ' -quality ' + str(compressione) + ' -scale ' + str(larghezza) + '  "' + immagine + '" "' + thumb + '"'
+		cmdline = sgconf.cfgget("appconvert") + ' ' + sgconf.cfgget("imagestriptags") + ' -quality ' + str(compressione) + ' -scale ' + str(larghezza) + '  "' + immagine + '" "' + thumb + '"'
 		extruncmd(cmdline, True)
 		# this will resize thumbnails if width < height
 		arr = extgraphicinfo(thumb, "arrdim")
 		w = int(arr[0])
 		h = int(arr[1])
 		if w < h:
-			cmdline = 'mogrify ' + sgconf.cfgget("imagestriptags") + ' -quality ' + str(compressione) + ' -crop ' + str(larghezza) + 'x' + str(larghezza) + '+0-' + str(round((h - w) / 2)) + ' "' + thumb + '"'
+			cmdline = sgconf.cfgget("appmogrify") + ' ' + sgconf.cfgget("imagestriptags") + ' -quality ' + str(compressione) + ' -crop ' + str(larghezza) + 'x' + str(larghezza) + '+0-' + str(round((h - w) / 2)) + ' "' + thumb + '"'
 			extruncmd(cmdline, True)  #
 
 
