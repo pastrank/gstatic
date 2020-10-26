@@ -13,8 +13,10 @@ import random
 import string
 import fnmatch
 import textwrap
+import csv
 
 import sgconf
+import sgexternal
 from sgglobals import *
 
 listarepl = collections.OrderedDict()  # list of replacing items in replace.conf
@@ -73,6 +75,25 @@ def clearstart():
 							pass
 
 
+def checkdep(application):
+	"""check for dependencies and find installed applications
+		for imagemagick and openssl
+	"""
+	chk = ""
+
+	if os.name == "nt":
+		checkingprog = "where"
+	else:
+		checkingprog = "which"
+
+	# checking if there the magick executable or single apps
+	chk = sgexternal.extgetcmd(checkingprog + " " + application)
+	if chk == "":
+		chk = sgexternal.extgetcmd(checkingprog + " magick")
+
+	return chk
+
+
 def checkpermission(fname, what):
 	"""
 	check file permissions
@@ -94,7 +115,7 @@ def conformitynamecheck():
 	spaths = []
 	# two folders are checked, main and newposts, then i advise for empty values
 	if sgconf.cfgget("dirstart") == "":
-		showmsg("You've to set the start directory before checkfilenames", 99)
+		showmsg("You've to set the start directory before check filenames", 99)
 		return
 	else:
 		spaths.append(sgconf.cfgget("dirstart"))
@@ -155,21 +176,15 @@ def file_search_replace(txt):
 	if not listarepl:
 		replfile = os.path.join(sgconf.cfgget("dirstart"), "site", "replace.conf")
 		if os.path.exists(replfile):
-			repconst = "(01234567890123456789)"
 			showmsg(" replacing contents in " + replfile, 0)
-			f = open(replfile)
-			linee = f.read().splitlines()
-			for l in linee:
-				if len(l) > 3 and l.find(":") > 1:
-					if l.find("\:") >= 0:
-						l = l.replace("\:", repconst)
-					try:
-						a = l[:l.find(":"):].replace(repconst, ":")
-						b = l[l.find(":") + 1:].replace(repconst, ":")
-						listarepl[a] = b
-					except:
-						pass
-			f.close()
+
+			with open(replfile, newline='') as csvfile:
+				sr = csv.reader(csvfile, delimiter='|')
+				for row in sr:
+					a = row[0]
+					b = row[1]
+					listarepl[a] = b
+			csvfile.close()
 		else:
 			listarepl["zzz"] = "zzz"
 
@@ -238,6 +253,18 @@ def file_write(nomefile, testo, modo):
 		showmsg("Error deleting " + nomefile, 9)
 
 
+def file_write_csv(nomefile, arr, modo):
+	""" write a csv file
+
+	"""
+	try:
+		with open(nomefile, modo, newline='') as csvfile:
+			w = csv.writer(csvfile, delimiter='|', quoting=csv.QUOTE_MINIMAL)
+			w.writerow(arr)
+	except:
+		showmsg("Error writing CSV file " + nomefile, 9)
+
+
 def file_read(nomefile):
 	"""open a file and read it
 
@@ -252,6 +279,16 @@ def file_read(nomefile):
 	else:
 		return ""
 
+
+def file_read_csv(nomefile):
+	arr = []
+	with open(nomefile) as csvfile:
+		sr = csv.reader(csvfile, delimiter='|')
+		for row in sr:
+		    arr.append(row)
+	
+	return arr
+	
 
 def fad(nomefile):
 	""" Filename As Description
@@ -347,7 +384,7 @@ def removehtml(s):
 
 
 def sterilizetemplates(s):
-
+	""" cleaning some chars from templates """
 	testo = s.replace("{", "[").replace("}", "]")
 	return testo
 

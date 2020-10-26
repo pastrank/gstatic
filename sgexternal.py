@@ -15,14 +15,13 @@ def extbackup(fn):
 	# noinspection PyPep8
 	"""backup an image should copy a backup of the modified images in a directory, and adding a number at the end if it is
 		already present a file with that name
-
 		:param fn: filename
 		:return: none
 		"""
 
-	today = time.strftime("%Y-%m-%d")
-	db = os.path.join(sgconf.cfgget("dirbackup"), today)
-	if not db == "":
+	if sgconf.cfgget("dirbackup") != "":
+		today = time.strftime("%Y-%m-%d")
+		db = os.path.join(sgconf.cfgget("dirbackup"), today)
 		if not os.path.exists(db):
 			os.makedirs(db)
 
@@ -51,10 +50,10 @@ def extgetcmd(comando):
 	for line in p.stdout.readlines():
 		try:
 			arr.append(line.strip().decode('ascii'))
-		except:
+		except Exception:
 			try:
 				arr.append(line.strip().decode('utf-8'))
-			except:
+			except Exception:
 				arr.append(line.strip().decode('ascii', 'ignore'))
 		p.wait()
 
@@ -68,7 +67,6 @@ def extgraphicinfo(immagine, cosa):
 	:param cosa: what to extract linksize=800x600 arrdim=[800, 600]
 	:return:
 	"""
-	arr = [0, 0]
 
 	if cosa == "linksize":
 		cmdl = sgconf.cfgget("appidentify") + " -format \'%w %h\' '" + immagine + "'"

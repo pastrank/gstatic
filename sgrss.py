@@ -18,7 +18,8 @@ from sgglobals import *
 
 global listarss
 listarss = []
-#
+
+
 def rssaddtolist(nomefile, mydate):
 	global listarss
 	listarefuse = []
@@ -92,7 +93,7 @@ def rssgo():
 	res.append("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>")
 	res.append("<rss version=\"2.0\" xmlns:atom=\"http://www.w3.org/2005/Atom\">")
 	res.append("<channel>")
-	#res.append("<atom:link href=\"http://" + cfgget("sitename") + "/" + cfgget("dirposts") + "/" + "rss.xml" + "\" rel=\"self\" type=\"application/rss+xml\">")
+	# res.append("<atom:link href=\"http://" + cfgget("sitename") + "/" + cfgget("dirposts") + "/" + "rss.xml" + "\" rel=\"self\" type=\"application/rss+xml\">")
 	res.append("<title>" + sgconf.cfgget("sitename") + "</title>")
 	res.append("<link>http://" + sgconf.cfgget("sitename") + "/</link>")
 	res.append("<description><![CDATA[" + sgconf.cfgget("rssdescription") + "]]></description>")
@@ -114,7 +115,7 @@ def rssgo():
 		sgproc.textget(myfile, mp)
 		descr = rsspreview(mp.text, mp.title, mp.filepath)
 
-		#xtext, xtitle, xtags, xfilesize, xfilelastm, xauthor,xfilename
+		# xtext, xtitle, xtags, xfilesize, xfilelastm, xauthor,xfilename
 		sitelink = os.path.join(sgconf.cfgget("sitename"), fn)
 		res.append("  <item>")
 		res.append("    <title><![CDATA[" + mp.title + "]]></title>")
@@ -126,7 +127,7 @@ def rssgo():
 		res.append("    <guid isPermaLink=\"false\">" + rsssetguid(ele) + "</guid>")
 		res.append("  </item>")
 
-	#res.append("</atom:link>")
+	# res.append("</atom:link>")
 	res.append("</channel>")
 	res.append("</rss>")
 
@@ -158,7 +159,7 @@ def rsssetauthor(proposedname, proposedmail):
 
 def rsssetguid(fromthis):
 	""" creates a guid hashing the name of a file, removing path before doing it
-	    this is necessary due it's needed to avoid duplicates
+	this is necessary due it's needed to avoid duplicates
 
 	:param fromthis: original
 	:return: the guid
@@ -214,6 +215,7 @@ def rsspreview(text, alternative, linkf):
 		res = "<img src='http://" + sgconf.cfgget("sitename") + "/" + thumbpath.replace(sgconf.cfgget("dirstart"), "") + "' " + sgexternal.extgraphicinfo(thumbpath, "linksize") + "><p>\n" + res
 
 	return res
+
 
 if __name__ == "__main__":
 	sgutils.showmsg(ERROR_LAUNCHED_SCRIPT, MESSAGE_NORMAL)

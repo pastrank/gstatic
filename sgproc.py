@@ -776,7 +776,7 @@ def pageroot(nomefile):
 		if htmlpath.startswith(".."):
 			if not htmlpath.startswith("../"):
 				htmlpath = htmlpath[2:]		
-	except:
+	except Exception:
 		htmlpath = ""
 
 	return htmlpath
@@ -1628,7 +1628,7 @@ def putnewpost():
 			return
 
 		for fn in filelist:
-			if sgutils.checkpermission(fn, "write") == False or sgutils.checkpermission(fn, "read") == False:
+			if not sgutils.checkpermission(fn, "write") or not sgutils.checkpermission(fn, "read"):
 				sgutils.showmsg("Files in new posts directory haven't the right permissions, can't proceed.", 99)
 				return
 
@@ -1642,7 +1642,7 @@ def putnewpost():
 						os.rename(filelist[0], os.path.splitext(filelist[1])[0] + ".jpg")
 
 		today = datetime.date.today()
-		#dirposts can be multiple, first is used
+		# dirposts can be multiple, first is used
 		mynewpath = os.path.join(cfgget("dirstart"), cfgget("dirposts").split("|")[0], today.strftime('%Y'), today.strftime('%m'), today.strftime('%d'))
 		if not os.path.exists(mynewpath):
 			os.makedirs(mynewpath)
@@ -1903,6 +1903,7 @@ def htmlbuildagecontrol(fdate):
 	except:
 		return True
 
+
 def htmlbuildgettemplate(nf, personalized):
 	"""get template file for a specified file: it gets first the file in slug, then template-name, then"
 	upper dirs template-name-all, then template: it can be a bit confusing, but consistency is using"
@@ -1983,7 +1984,10 @@ def textget(nomefile, mypage):
 			cmdline = Template(cfgget("filepreprocessor")).safe_substitute(file=nomefile)
 			extruncmd(cmdline, False)
 
-		testo = ":> date:" + datetime.date.today().strftime('%Y%m%d') + "\n:> uid:" + sgutils.getuniqueid(nomefile, "fileid") + "\n" + testo
+		if testo.find(":> uid:") < 0:
+			testo = ":> date:" + datetime.date.today().strftime('%Y%m%d') + "\n:> uid:" + sgutils.getuniqueid(nomefile, "fileid") + "\n" + testo
+		else:
+			testo = ":> date:" + datetime.date.today().strftime('%Y%m%d') + "\n" + testo
 		sgutils.file_write(nomefile, testo, "w")
 		testo = sgutils.file_read(nomefile)
 
@@ -2041,7 +2045,7 @@ def textget(nomefile, mypage):
 		elif line.startswith(":> date:"):
 			mypage.date = line[8:]
 			if cfgget("rsscreate") == "ok":
-				sgrss.rssaddtolist(nomefile,mypage.date)
+				sgrss.rssaddtolist(nomefile, mypage.date)
 		elif line.startswith(":> perm:"):
 			mypage.permalink = line[8:]
 			createperma(mypage.permalink, nomefile)

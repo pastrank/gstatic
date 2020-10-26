@@ -11,6 +11,7 @@
 
 # Thanks for this good piece of software, ddear HY
 # The next row is needed from static site generator.
+
 import sgutils
 from sgglobals import *
 
@@ -73,8 +74,8 @@ def escape(text, quote=False, smart_amp=True):
         text = _escape_pattern.sub('&amp;', text)
     else:
         text = text.replace('&', '&amp;')
-    text = text.replace('<', '&lt;')
-    text = text.replace('>', '&gt;')
+    # text = text.replace('<', '&lt;')
+    # text = text.replace('>', '&gt;')
     if quote:
         text = text.replace('"', '&quot;')
         text = text.replace("'", '&#39;')
@@ -498,7 +499,7 @@ class InlineGrammar(object):
     strikethrough = re.compile(r'^~~(?=\S)([\s\S]*?\S)~~')  # ~~word~~
     footnote = re.compile(r'^\[\^([^\]]+)\]')
     text = re.compile(r'^[\s\S]+?(?=[\\<!\[_*`~]|https?://| {2,}\n|$)')
-
+    
     def hard_wrap(self):
         """Grammar for hard wrap linebreak. You don't need to add two
         spaces at the end of a line.
@@ -517,12 +518,12 @@ class InlineLexer(object):
         'escape', 'inline_html', 'autolink', 'url',
         'footnote', 'link', 'reflink', 'nolink',
         'double_emphasis', 'emphasis', 'code',
-        'linebreak', 'strikethrough', 'text',
+        'linebreak', 'strikethrough', 'text'
     ]
     inline_html_rules = [
         'escape', 'inline_html', 'autolink', 'url', 'link', 'reflink',
         'nolink', 'double_emphasis', 'emphasis', 'code',
-        'linebreak', 'strikethrough', 'text',
+        'linebreak', 'strikethrough', 'text'
     ]
 
     def __init__(self, renderer, rules=None, **kwargs):
@@ -682,7 +683,6 @@ class InlineLexer(object):
     def output_text(self, m):
         text = m.group(0)
         return self.renderer.text(text)
-
 
 class Renderer(object):
     """The default HTML renderer for rendering Markdown.
@@ -1166,7 +1166,8 @@ class Markdown(object):
 
 
 # noinspection PyIncorrectDocstring,PyIncorrectDocstring,PyIncorrectDocstring,PyIncorrectDocstring
-def markdown(text, escape=True, **kwargs):
+# def markdown(text, escape=True, **kwargs):
+def markdown(text, escape=False, **kwargs):
     """Render markdown formatted text to html.
 
     :param text: markdown formatted text content.

@@ -182,18 +182,15 @@ def createconfigfile(creatingdirectory):
 	# external progs  -------------------------------------------------------------------------
 	if not iparse.has_section("Applications"):
 		iparse.add_section("Applications")
-	if os.name == "nt":
-		winexecutable = ".exe"
-	else:
-		winexecutable = ""
+
 	if not iparse.has_option("Applications", "Convert"):
-			iparse.set("Applications", "Convert", "convert" + winexecutable)
+			iparse.set("Applications", "Convert", sgutils.checkdep("convert"))
 	if not iparse.has_option("Applications", "Identify"):
-			iparse.set("Applications", "Identify", "identify" + winexecutable)
+			iparse.set("Applications", "Identify", sgutils.checkdep("identify"))
 	if not iparse.has_option("Applications", "Mogrify"):
-			iparse.set("Applications", "Mogrify", "mogrify" + winexecutable)
+			iparse.set("Applications", "Mogrify", sgutils.checkdep("mogrify"))
 	if not iparse.has_option("Applications", "OpenSSL"):
-			iparse.set("Applications", "OpenSSL", "openssl" + winexecutable)
+			iparse.set("Applications", "OpenSSL", sgutils.checkdep("openssl"))
 
 	# final writing
 	with open(os.path.join(creatingdirectory, "site", "site.conf"), "w", encoding="utf-8") as f:
@@ -218,16 +215,6 @@ def createchunks():
 	if not os.path.exists(fn):
 		sgutils.file_write(fn, "<!-- composing date\nmoment=block composing the date\nlanguage=two chars language -->\n<span class='${language}' style='display:none;'>${moment}</span>", "w")
 	sgconf.cfgset("chunk_archive_date_local", createchunksreading(fn))
-
-	# fn = os.path.join(cdir, "archive_summary")
-	# if not os.path.exists(fn):
-	# 	sgutils.file_write(fn, "<!-- archive files routines --><a href='${file}'>${description} ${year} ${month}</a><br>\n", "w")
-	# sgconf.cfgset("chunk_archive_summary", createchunksreading(fn))
-
-	# fn = os.path.join(cdir, "archive_summary_dynamic")
-	# if not os.path.exists(fn):
-	# 	sgutils.file_write(fn, "<!-- timeline.md ajax routines to\n  go to other pages-->\n<a href=\"#\" onClick=\"loadPagePart('dynamic_content','${file}');\">${description} ${year} ${month}</a><br>\n", "w")
-	# sgconf.cfgset("chunk_archive_summary_dynamic", createchunksreading(fn))
 
 	fn = os.path.join(cdir, "article_square")
 	if not os.path.exists(fn):
@@ -461,6 +448,10 @@ def createdefaultcss():
 		cssdef += "\n.sgarticlefulllink { }"
 	if cssdef.find(".sgcode") < 0:
 		cssdef += "\n.sgcode {\n  border: 1px;\n  background-color: white; }"
+	if cssdef.find(".sgdiv1") < 0:
+		cssdef += "\n.sgdiv1 {\n  border: 1px;}"
+	if cssdef.find(".sgdiv2") < 0:
+		cssdef += "\n.sgdiv2 {\n  border: 1px;}"
 	if cssdef.find(".sgfastimage") < 0:
 		cssdef += "\n.sgfastimage {\n  float: left;\n  margin: 5px;\n  border: 0px; }"
 	if cssdef.find(".sgfastyoutube") < 0:
@@ -523,7 +514,6 @@ def createdefaultcss():
 
 def createdefaultjsfile():
 	"""
-
 	:return:
 	"""
 	res = """// g.static js file
@@ -616,8 +606,17 @@ def createdefaultreplaceconf():
 	filename = os.path.join(sgconf.cfgget("dirstart"), "site", "replace.conf")
 
 	if not os.path.exists(filename):
-		text = "texttobereplaced:texttoreplace"
-		sgutils.file_write(filename, text, "w")
+		sgutils.file_write_csv(filename, ["oldtext", "newtext"], "w")
+
+
+def createdefaulttagconf():
+	""" try to check default tag.conf file, with some defaults
+		:return: anything, just a pointer
+	"""
+	filename = os.path.join(sgconf.cfgget("dirstart"), "site", "replacetag.conf")
+
+	if not os.path.exists(filename):
+		sgutils.file_write_csv(filename, ["%%", "<mytag>", "</mytag>"], "w")
 
 
 def createdefaultvars():
@@ -773,7 +772,11 @@ def gettmplg(bodycontent):
 	<link rel='stylesheet' type='text/css' href='${rootdir}site/styles.css'>
 	</head>
 	<body>
+	<div class="sgdiv1">
+	</div>
+	<div class="sgdiv2">
 	${contenuto}
+	</div>
 	</body>
 	</html>"""
 
