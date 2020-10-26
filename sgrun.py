@@ -24,7 +24,6 @@ import sgproc
 import sggen
 from sgconf import *
 from sgrss import rssgo
-from sgexternal import extgetcmd, extruncmd
 from configparser import ConfigParser
 
 
@@ -92,20 +91,6 @@ def letsgo():
 	# remove old files
 	if cfgget("finalcleaning") == "ok":
 		sgutils.clearfinal()
-
-
-def checkdeps(para):
-	"""check for dependencies
-
-	:param para: the name of the dependencies
-	"""
-	chk = extgetcmd("which " + para).strip()
-	if para == "mogrify":
-		if chk == "":
-			sgutils.showmsg("You must install ImageMagick package before running this application,\n g.static will exit.", 99)
-			sys.exit()
-	elif para == "openssl":
-		cfgset("z_openssl_path", chk)
 
 
 def startintro():
@@ -205,6 +190,9 @@ def initialworks():
 	if os.path.exists(spath):
 		os.remove(spath)
 
+	sggen.createdefaultreplaceconf()
+	sggen.createdefaulttagconf()
+
 
 def extractvalue(valore):
 	""" get a value from the action file
@@ -249,9 +237,9 @@ if __name__ == "__main__":
 		tmp = getattr(args, 'build')[0]
 		if os.path.exists(tmp):
 			cfgset("dirstart", slashadd(tmp))
-			checkdeps("mogrify")
-			checkdeps("openssl")
+
 			readconf(tmp)
+			# checkdeps()
 			initialworks()
 			sgproc.getfileinvar()
 			sgproc.getfilescript()
@@ -315,4 +303,3 @@ if __name__ == "__main__":
 	else:
 		# startintro()
 		print("  please digit   sgrun.py --help   to show commands list")
-
