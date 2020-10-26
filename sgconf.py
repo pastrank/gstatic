@@ -43,7 +43,7 @@ def readconf(sitedirectory):
 		with open(conffile, 'r', encoding='utf-8') as f:
 			try:
 				iparse.read_file(f)
-			except:
+			except Exception:
 				f.close()
 				return
 			f.close()
@@ -104,6 +104,10 @@ def readconf(sitedirectory):
 	cfgset("saltprefix", getconf(iparse, "Jobs", "SSLSaltPrefix"))
 	cfgset("tempdirectory", rcchk(getconf(iparse, "Paths", "TemporaryDirectory"), 1, "tempdirectory"))
 	cfgset("updatefilelist", getconf(iparse, "Jobs", "UpdateFileList"))
+	cfgset("appconvert", getconf(iparse, "Applications", "Convert"))
+	cfgset("appidentify", getconf(iparse, "Applications", "Identify"))
+	cfgset("appmogrify", getconf(iparse, "Applications", "Mogrify"))
+	cfgset("appopenssl", getconf(iparse, "Applications", "OpenSSL"))
 	#
 	cfgset("stringgallerieslinehomename", getconf(iparse, "Images", "ImagesLineHomeName"))
 	cfgset("stringpostslisttitle", getconf(iparse, "Posts", "ListTitle"))                #
@@ -114,13 +118,21 @@ def readconf(sitedirectory):
 	cfgset("stringpostsarchivetopname", getconf(iparse, "Posts", "ArchiveTopDef"))
 	cfgset("stringupindexlinkname",  getconf(iparse, "Posts", "UpIndexLinkName"))
 	cfgset("stringimageslinehomename", getconf(iparse, "Images", "ImagesHomeName"))
+	#
+	cfgset("appconvert", getconf(iparse, "Applications", "Convert"))
+	cfgset("appidentify", getconf(iparse, "Applications", "Identify"))
+	cfgset("appmogrify", getconf(iparse, "Applications", "Mogrify"))
+	cfgset("appopenssl", getconf(iparse, "Applications", "OpenSSL"))
 
 	# these aren't set by user, but are transitory values
 
 	cfgset("z_archives_list", "")
 	cfgset("z_currentfile", "")
 	cfgset("z_currentdate", today.strftime('%Y') + today.strftime('%m') + today.strftime('%d'))
+	cfgset("z_magick_pref", "")					# depends on checkdeps() to see if magick is the executable
 	cfgset("z_files", 0)						# counter for file processe
+	cfgset("replacetagfile", sgutils.file_read_csv(os.path.join(cfgget("dirstart"), "site", "replacetag.conf")))		
+												# read if replacetag.conf is not to use
 	cfgset("firstarchive", "")  				# the first archive file
 	cfgset("lastpost", "")						# last inserted post
 
@@ -227,7 +239,7 @@ def listaget(nf):
 			return "", ""
 		else:
 			return listaposts[num - 1], listaposts[num + 1]
-	except:
+	except Exception:
 		return "", ""
 
 

@@ -150,7 +150,7 @@ def getlinkreplace(linea):
 	#res = ""
 
 	listimages = [".bmp", ".jpg", ".png"]
-	listaudio = [".flac", ".mp3", ".ogg", ".wav"]
+	listaudio = ["dsd", "dsf", ".flac", ".mp3", ".ogg", ".wav", "wv"]
 	listvideo = [".flv", ".mkv", ".mp4", ".ogm", ".webm"]
 
 	# image files -------------------------------------------------------------------------------
@@ -188,15 +188,12 @@ def markup(elenco):
 	# brk = (r'\[(' + (nobracket + r'(\[' + nobracket) * 6 + (nobracket + r'\])*' + nobracket) * 6 + nobracket + r')\]')
 
 	local_re = r'<:([^>]*)>'                				# <:link>
-	mark_re = r'<m:([^>]*)>'    							# <m: * >
+	#mark_re = r'<m:([^>]*)>'    							# <m: * >
 	notes_re = r'<n:([^>]*)>'    							# <n: * >
-	quote_re = r'<q:([^>]*)>'    							# <q: * >
-	#sgdir_re = r'<sgdir>(.*?)</sgdir>'                      # <sgdir>*</sgdir>
-	#sglow_re = r'<sglow>(.*?)</sglow>'                      # <sglow>*</sglow>
-	#sgttl_re = r'<sgttl>(.*?)</sgttl>'                      # <sgttl>*</sgttl>
+	# quote_re = r'<q:([^>]*)>'    							# <q: * >
 	#
 	filelist_re = r'\$\{?listgeneric\(.*\)\}?'              # listgeneric(kindoffiles)
-	history_re = r'\$\{?history\([0-9][0-9]\)\}?'           # listgeneric(kindoffiles)
+	# history_re = r'\$\{?history\([0-9][0-9]\)\}?'           # listgeneric(kindoffiles)
 	scripts_re = r'\$\{?script\(.*\)\}?'                    # script(scriptname)
 	lang_re = r'\$\{?lang\([a-z][a-z]\)\}?'                 # listgeneric(kindoffiles)
 	# for internal use
@@ -210,25 +207,20 @@ def markup(elenco):
 		testo = testo.replace(line, sgproc.replacefilelist(line))
 	for line in re.findall(scripts_re, testo):
 		testo = testo.replace(line, sgproc.pagescriptresult(line))
-	for line in re.findall(mark_re, testo):
-		testo = testo.replace("<m:" + line + ">", "<mark class='sgmark'>" + line + "</mark>")
+	# for line in re.findall(mark_re, testo):
+	# 	testo = testo.replace("<m:" + line + ">", "<mark class='sgmark'>" + line + "</mark>")
 	for line in re.findall(square_re, testo):
 		testo = testo.replace("<sqr:" + line + ">", getindexsquare(line))
-	for line in re.findall(notes_re, testo):
-		if fnmatch.fnmatch(line, "*#*"):
-			a = line[:line.find("#")]
-			b = line[line.find("#") + 1:]
-			testo = testo.replace("<n:" + line + ">", sgchunks.process(sgconf.cfgget("chunk_note_link"), "", {"note": a, "text": b}))
-		elif fnmatch.fnmatch(line, "*|*"):
-			a = line[:line.find("|")]
-			b = line[line.find("|") + 1:]
-			testo = testo.replace("<n:" + line + ">", sgchunks.process(sgconf.cfgget("chunk_note"), "", {"note": a, "text": b}))
-		else:
-			#a = ""
-			b = line
-			testo = testo.replace("<n:" + line + ">", sgchunks.process(sgconf.cfgget("chunk_note"), "", {"note": "", "text": b}))
-	for line in re.findall(quote_re, testo):
-		testo = testo.replace("<q:" + line + ">", sgchunks.process(sgconf.cfgget("chunk_note"), "", {"quote": line}))
+	# for line in re.findall(quote_re, testo):
+	#	testo = testo.replace("<q:" + line + ">", sgchunks.process(sgconf.cfgget("chunk_note"), "", {"quote": line}))
+	
+	myconds = sgconf.cfgget("replacetagfile")
+	if myconds:
+		for r in myconds:
+			if testo.find(r[0]) < testo.rfind(r[0]):
+				m_re = r[0] + '(.*?)' + r[0]
+				for line in re.findall(m_re, testo):
+					testo = testo.replace(r[0] + line + r[0], r[1] + line + r[2])
 
 	testo = sgmistune.markdown(testo, False)
 	# these lines about correcting the results from sgmistune
