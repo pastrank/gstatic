@@ -232,14 +232,14 @@ if __name__ == "__main__":
 	if args.hidemessages:
 		cfgset("hideprogressmessages", "no")
 
+	sgutils.checkdeps()
+
 	# exclusive options
 	if args.build:
 		tmp = getattr(args, 'build')[0]
 		if os.path.exists(tmp):
 			cfgset("dirstart", slashadd(tmp))
-
 			readconf(tmp)
-			# checkdeps()
 			initialworks()
 			sgproc.getfileinvar()
 			sgproc.getfilescript()

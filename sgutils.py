@@ -6,6 +6,7 @@ on working the files and directory, and generally to things
 unrelated with doing a site"""
 
 import os
+import sys
 import shutil
 import datetime
 import collections
@@ -75,11 +76,12 @@ def clearstart():
 							pass
 
 
-def checkdep(application):
+def checkdeps():
 	"""check for dependencies and find installed applications
 		for imagemagick and openssl
 	"""
-	chk = ""
+	listan = ["convert", "identify", "mogrify"]
+	listau = ["openssl"]
 
 	if os.name == "nt":
 		checkingprog = "where"
@@ -87,11 +89,15 @@ def checkdep(application):
 		checkingprog = "which"
 
 	# checking if there the magick executable or single apps
-	chk = sgexternal.extgetcmd(checkingprog + " " + application)
-	if chk == "":
-		chk = sgexternal.extgetcmd(checkingprog + " magick")
-
-	return chk
+	for el in listan:
+		chk = sgexternal.extgetcmd(checkingprog + " " + el)
+		if chk == "":
+			sgutils.showmsg("Can't find application " + el + ". Exiting")
+			sys.exit(2)
+	for el in listau:
+		chk = sgexternal.extgetcmd(checkingprog + " " + el)
+		if chk == "":
+			sgutils.showmsg("Warning! Can't find application " + el + ".")
 
 
 def checkpermission(fname, what):
@@ -282,11 +288,11 @@ def file_read(nomefile):
 
 def file_read_csv(nomefile):
 	arr = []
-	with open(nomefile) as csvfile:
-		sr = csv.reader(csvfile, delimiter='|')
-		for row in sr:
-		    arr.append(row)
-	
+	if os.path.exists(nomefile):
+		with open(nomefile) as csvfile:
+			sr = csv.reader(csvfile, delimiter='|')
+			for row in sr:
+				arr.append(row)
 	return arr
 	
 

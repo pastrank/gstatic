@@ -179,18 +179,18 @@ def createconfigfile(creatingdirectory):
 		iparse.set("RSS", "RSSDontAddThese", "")
 	if not iparse.has_option("RSS", "RSSSummaryLength"):
 		iparse.set("RSS", "RSSSummaryLength", "300")
-	# external progs  -------------------------------------------------------------------------
-	if not iparse.has_section("Applications"):
-		iparse.add_section("Applications")
-
-	if not iparse.has_option("Applications", "Convert"):
-			iparse.set("Applications", "Convert", sgutils.checkdep("convert"))
-	if not iparse.has_option("Applications", "Identify"):
-			iparse.set("Applications", "Identify", sgutils.checkdep("identify"))
-	if not iparse.has_option("Applications", "Mogrify"):
-			iparse.set("Applications", "Mogrify", sgutils.checkdep("mogrify"))
-	if not iparse.has_option("Applications", "OpenSSL"):
-			iparse.set("Applications", "OpenSSL", sgutils.checkdep("openssl"))
+	# # external progs  -------------------------------------------------------------------------
+	# if not iparse.has_section("Applications"):
+	# 	iparse.add_section("Applications")
+	#
+	# if not iparse.has_option("Applications", "Convert"):
+	# 		iparse.set("Applications", "Convert", sgutils.checkdep("convert"))
+	# if not iparse.has_option("Applications", "Identify"):
+	# 		iparse.set("Applications", "Identify", sgutils.checkdep("identify"))
+	# if not iparse.has_option("Applications", "Mogrify"):
+	# 		iparse.set("Applications", "Mogrify", sgutils.checkdep("mogrify"))
+	# if not iparse.has_option("Applications", "OpenSSL"):
+	# 		iparse.set("Applications", "OpenSSL", sgutils.checkdep("openssl"))
 
 	# final writing
 	with open(os.path.join(creatingdirectory, "site", "site.conf"), "w", encoding="utf-8") as f:
@@ -758,7 +758,7 @@ def createnewsite(directory):
 	extruncmd(cmdline, False)
 
 	print("\nA new site structure should be done in " + sgconf.cfgget("dirstart"))
-	print("One example actions file has been created in your root site directory")
+	print("One example of configuration file has been created in your '/site' site directory")
 	print("Make sure of having a backup directory setting before putting images in here")
 
 

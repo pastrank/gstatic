@@ -119,17 +119,16 @@ def readconf(sitedirectory):
 	cfgset("stringupindexlinkname",  getconf(iparse, "Posts", "UpIndexLinkName"))
 	cfgset("stringimageslinehomename", getconf(iparse, "Images", "ImagesHomeName"))
 	#
-	cfgset("appconvert", getconf(iparse, "Applications", "Convert"))
-	cfgset("appidentify", getconf(iparse, "Applications", "Identify"))
-	cfgset("appmogrify", getconf(iparse, "Applications", "Mogrify"))
-	cfgset("appopenssl", getconf(iparse, "Applications", "OpenSSL"))
+	cfgset("appconvert", "convert")
+	cfgset("appidentify", "identify")
+	cfgset("appmogrify", "mogrify")
+	cfgset("appopenssl", "openssl")
 
 	# these aren't set by user, but are transitory values
 
 	cfgset("z_archives_list", "")
 	cfgset("z_currentfile", "")
 	cfgset("z_currentdate", today.strftime('%Y') + today.strftime('%m') + today.strftime('%d'))
-	cfgset("z_magick_pref", "")					# depends on checkdeps() to see if magick is the executable
 	cfgset("z_files", 0)						# counter for file processe
 	cfgset("replacetagfile", sgutils.file_read_csv(os.path.join(cfgget("dirstart"), "site", "replacetag.conf")))		
 												# read if replacetag.conf is not to use
@@ -207,8 +206,13 @@ def cfgget(k):
 	:param k: the name of the value
 	:return: the value
 	"""
-	return cfg.get(k, '')
+	res = cfg.get(k, '')
 
+	if k == "appconvert":
+		if res == "":
+			res = "convert"
+
+	return res
 
 def listaset(elenco):
 	""" set a value for list elenco

@@ -5,8 +5,8 @@
 import sgutils
 
 # application and version
-APPNAME="g.static"
-APPVERSION="0.21"
+APPNAME = "g.static"
+APPVERSION = "0.21"
 
 # error showed when another script than sgrun.py is launched
 ERROR_LAUNCHED_SCRIPT = "You should run sgrun.py instead"
